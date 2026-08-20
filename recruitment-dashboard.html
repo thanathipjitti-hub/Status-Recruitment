@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ระบบติดตามการสรรหาบุคลากร วว. ปี 2569</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Sarabun',sans-serif;background:#e8edf8;color:#1e293b;min-height:100vh;display:flex;overflow-x:hidden}
+/* animated bg dots */
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle at 20% 20%,rgba(168,85,247,.07) 0%,transparent 50%),radial-gradient(circle at 80% 80%,rgba(99,102,241,.07) 0%,transparent 50%);pointer-events:none;z-index:0}
+.main{position:relative;z-index:1}
+
+/* ─── SIDEBAR ─── */
+.sidebar{width:248px;min-height:100vh;background:linear-gradient(165deg,#0d0025 0%,#250858 40%,#4a1799 78%,#6d28d9 100%);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:100;box-shadow:4px 0 30px rgba(0,0,0,.45);overflow:hidden}
+.sidebar::before{content:'';position:absolute;top:-60px;right:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(167,139,250,.25) 0%,transparent 70%);pointer-events:none}
+.sidebar::after{content:'';position:absolute;bottom:-40px;left:-30px;width:140px;height:140px;background:radial-gradient(circle,rgba(244,114,182,.15) 0%,transparent 70%);pointer-events:none}
+.sb-logo{padding:20px 16px 16px;border-bottom:1px solid rgba(255,255,255,.1);position:relative}
+.sb-logo .logo-wrap{display:flex;align-items:center;gap:12px;margin-bottom:0}
+.sb-logo .logo-svg{width:52px;height:52px;flex-shrink:0;filter:drop-shadow(0 4px 10px rgba(168,85,247,.6))}
+.sb-logo .logo-text h1{color:#fff;font-size:1.05rem;font-weight:900;letter-spacing:.5px;line-height:1.2}
+.sb-logo .logo-text p{color:#c4b5fd;font-size:.72rem;margin-top:3px;line-height:1.4}
+.nav-section{padding:14px 16px 4px;color:#7c5fad;font-size:.68rem;font-weight:800;letter-spacing:2px;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 18px;color:#ddd6fe;font-size:.92rem;cursor:pointer;border-radius:10px;margin:2px 8px;transition:.2s;position:relative}
+.nav-item:hover{background:rgba(255,255,255,.1);color:#fff;transform:translateX(3px)}
+.nav-item.active{background:linear-gradient(90deg,rgba(168,85,247,.45),rgba(244,114,182,.25));color:#fff;border-left:3px solid #f472b6}
+.nav-item .icon{width:22px;text-align:center;font-size:1rem}
+.sb-footer{margin-top:auto;padding:12px 16px;border-top:1px solid rgba(255,255,255,.08);color:#7c6aa0;font-size:.75rem;line-height:1.7}
+
+/* ─── MAIN ─── */
+.main{margin-left:248px;flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:rgba(255,255,255,.97);backdrop-filter:blur(16px);padding:11px 26px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid transparent;border-image:linear-gradient(90deg,#a855f7,#f472b6,#6366f1) 1;position:sticky;top:0;z-index:50;box-shadow:0 2px 20px rgba(0,0,0,.08)}
+.topbar-title{font-size:.98rem;font-weight:800;color:#1e293b}
+.topbar-sub{font-size:.72rem;color:#64748b;margin-top:1px}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.badge-live{background:linear-gradient(135deg,#d1fae5,#a7f3d0);color:#065f46;padding:4px 11px;border-radius:20px;font-size:.71rem;font-weight:700;display:flex;align-items:center;gap:5px}
+.badge-live::before{content:'●';animation:blink 1.3s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+.btn-top{border:none;padding:7px 13px;border-radius:8px;font-size:.76rem;cursor:pointer;font-family:inherit;transition:.2s;font-weight:600}
+.btn-refresh{background:linear-gradient(135deg,#f472b6,#a855f7);color:#fff;box-shadow:0 3px 10px rgba(168,85,247,.4)}
+.btn-refresh:hover{opacity:.88;transform:translateY(-1px)}
+.btn-fs{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}
+.btn-fs:hover{background:#e2e8f0}
+
+.content{padding:18px 22px;flex:1}
+
+/* ─── KPI ─── */
+.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}
+.kpi{border-radius:16px;padding:16px 14px;color:#fff;position:relative;overflow:hidden;cursor:pointer;transition:.25s;box-shadow:0 4px 18px rgba(0,0,0,.16)}
+.kpi:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.22)}
+.kpi:active{transform:scale(.97)}
+.kpi.active-filter{outline:3px solid rgba(255,255,255,.7);outline-offset:2px}
+.kpi::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.18),transparent);pointer-events:none}
+.kpi::after{content:'';position:absolute;right:-12px;bottom:-12px;width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.12)}
+.kpi-label{font-size:.67rem;opacity:.85;font-weight:700;text-transform:uppercase;letter-spacing:.8px}
+.kpi-num{font-size:2.3rem;font-weight:900;line-height:1;margin:4px 0 2px;font-variant-numeric:tabular-nums}
+.kpi-desc{font-size:.67rem;opacity:.72}
+.kpi-icon{position:absolute;right:13px;top:13px;font-size:1.6rem;opacity:.3}
+.kpi-total{background:linear-gradient(135deg,#6366f1,#8b5cf6)}
+.kpi-exec{background:linear-gradient(135deg,#f59e0b,#b45309)}
+.kpi-emp{background:linear-gradient(135deg,#3b82f6,#1d4ed8)}
+.kpi-perm{background:linear-gradient(135deg,#10b981,#047857)}
+.kpi-gen{background:linear-gradient(135deg,#f472b6,#db2777)}
+
+/* ─── CHARTS ROW ─── */
+.charts-row{display:grid;grid-template-columns:1fr 2fr 1.05fr;gap:13px;margin-bottom:16px}
+.card{background:#fff;border-radius:16px;padding:16px;box-shadow:0 1px 8px rgba(0,0,0,.06);border:1px solid rgba(226,232,240,.9);transition:.2s}
+.card:hover{box-shadow:0 4px 22px rgba(0,0,0,.1)}
+.card.filtered{border-color:#a855f7;box-shadow:0 0 0 2px rgba(168,85,247,.18),0 4px 22px rgba(0,0,0,.1)}
+.card-title{font-size:.86rem;font-weight:800;color:#1e293b;margin-bottom:2px}
+.card-sub{font-size:.68rem;color:#94a3b8;margin-bottom:10px}
+.chart-wrap{position:relative}
+
+/* ─── DONUT CENTER ─── */
+.donut-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);text-align:center;pointer-events:none}
+.dc-num{font-size:1.7rem;font-weight:900;color:#1e293b;line-height:1}
+.dc-lbl{font-size:.62rem;color:#94a3b8;margin-top:1px}
+
+/* ─── Q-BARS ─── */
+.q-row{display:flex;flex-direction:column;gap:7px;margin-top:6px}
+.q-bar-row{display:flex;align-items:center;gap:8px;font-size:.74rem}
+.q-label{width:62px;color:#64748b;text-align:right;flex-shrink:0;font-size:.7rem}
+.q-bar-bg{flex:1;background:#f1f5f9;border-radius:6px;height:20px;overflow:hidden}
+.q-bar{height:100%;border-radius:6px;transition:.55s cubic-bezier(.4,0,.2,1);display:flex;align-items:center;justify-content:flex-end;padding-right:6px}
+.q-bar span{color:#fff;font-size:.69rem;font-weight:800;opacity:0;transition:.3s .4s}
+.q-bar.loaded span{opacity:1}
+.q-val{width:24px;font-weight:800;color:#1e293b;font-size:.78rem;text-align:right}
+
+/* ─── SUMMARY ─── */
+.summary-row{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+.sum-card{border-radius:14px;padding:14px 16px;border:1px solid;transition:.2s}
+.sum-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.08)}
+.sum-card h4{font-size:.76rem;font-weight:800;margin-bottom:8px}
+.sum-card .nums{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.num-item{text-align:center}
+.num-item .n{font-size:1.5rem;font-weight:900;line-height:1.1}
+.num-item .l{font-size:.6rem;color:#64748b;margin-top:1px}
+
+/* ─── TABS ─── */
+.tab-row{display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap}
+.tab-btn{padding:7px 15px;border:none;border-radius:9px;font-size:.8rem;font-weight:700;cursor:pointer;transition:.2s;font-family:inherit;background:#f1f5f9;color:#64748b;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.tab-btn.on{background:linear-gradient(135deg,#f472b6,#a855f7);color:#fff;box-shadow:0 4px 14px rgba(168,85,247,.4)}
+
+/* ─── FILTER BAR ─── */
+.filter-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;background:#f8fafc;padding:10px 12px;border-radius:10px;border:1px solid #e8ecf4;align-items:center}
+.filter-bar select,.filter-bar input{padding:5px 10px;border:1px solid #cbd5e1;border-radius:7px;font-size:.77rem;font-family:inherit;background:#fff;color:#1e293b;transition:.2s;height:30px}
+.filter-bar select:focus,.filter-bar input:focus{outline:none;border-color:#a855f7;box-shadow:0 0 0 2px rgba(168,85,247,.15)}
+.filter-bar label{font-size:.73rem;color:#64748b;font-weight:700}
+.btn-clear{background:#fff;border:1px solid #cbd5e1;padding:5px 12px;border-radius:7px;font-size:.74rem;cursor:pointer;color:#64748b;font-family:inherit;transition:.2s;height:30px;font-weight:600}
+.btn-clear:hover{background:#fee2e2;border-color:#fca5a5;color:#dc2626}
+#tbl-count{font-size:.74rem;color:#7c3aed;font-weight:700;white-space:nowrap}
+
+/* ─── TABLE ─── */
+.tbl-wrap{overflow-x:auto;border-radius:12px;border:1px solid #e2e8f0;min-width:0}
+.tbl{width:100%;border-collapse:collapse;font-size:.78rem;table-layout:fixed}
+.tbl th{background:linear-gradient(90deg,#1e293b,#2d3c52);color:#fff;padding:9px 10px;text-align:left;font-weight:700;white-space:nowrap;position:sticky;top:0;z-index:2;overflow:hidden;text-overflow:ellipsis}
+.tbl td{padding:7px 10px;border-bottom:1px solid #f1f5f9;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* Column widths */
+.tbl th:nth-child(1),.tbl td:nth-child(1){width:36px}
+.tbl th:nth-child(2),.tbl td:nth-child(2){width:80px}
+.tbl th:nth-child(3),.tbl td:nth-child(3){width:90px}
+.tbl th:nth-child(4),.tbl td:nth-child(4){width:160px}
+.tbl th:nth-child(5),.tbl td:nth-child(5){width:70px}
+.tbl th:nth-child(6),.tbl td:nth-child(6){width:90px}
+.tbl th:nth-child(7),.tbl td:nth-child(7){width:70px}
+.tbl th:nth-child(8),.tbl td:nth-child(8){width:130px}
+.tbl th:nth-child(9),.tbl td:nth-child(9){width:130px}
+.tbl th:nth-child(10),.tbl td:nth-child(10){width:90px}
+.tbl th:nth-child(11),.tbl td:nth-child(11){width:100px}
+.tbl th:nth-child(12),.tbl td:nth-child(12){width:70px}
+.tbl th:nth-child(13),.tbl td:nth-child(13){width:120px}
+.tbl tr:nth-child(even) td{background:#f8faff}
+.tbl tr:hover td{background:#eef4ff}
+.sbadge{padding:3px 9px;border-radius:12px;font-size:.68rem;font-weight:700;white-space:nowrap}
+.s-done{background:#dcfce7;color:#166534}
+.s-proc{background:#dbeafe;color:#1d4ed8}
+.s-hold{background:#fef3c7;color:#92400e}
+.s-pend{background:#fee2e2;color:#991b1b}
+.frame-badge{padding:2px 8px;border-radius:10px;font-size:.66rem;font-weight:700}
+.f-init{background:#ede9fe;color:#6d28d9}
+.f-add{background:#fce7f3;color:#be185d}
+.f-pend{background:#f1f5f9;color:#64748b}
+.type-badge{padding:2px 8px;border-radius:10px;font-size:.66rem;font-weight:700}
+.t-exec{background:#fef9c3;color:#854d0e}
+.t-gov{background:#dbeafe;color:#1e40af}
+.t-perm{background:#dcfce7;color:#166534}
+.t-gen{background:#ffe4e6;color:#9f1239}
+.tbl-empty{text-align:center;color:#94a3b8;padding:48px;font-size:.88rem}
+
+/* ─── LOADER ─── */
+#loader{display:flex;align-items:center;justify-content:center;min-height:60vh;flex-direction:column;gap:14px;color:#64748b}
+.spinner{width:42px;height:42px;border:3px solid #e9d5ff;border-top-color:#a855f7;border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-txt{font-size:.86rem;color:#94a3b8;animation:fade 1.4s infinite}
+@keyframes fade{0%,100%{opacity:.4}50%{opacity:1}}
+
+/* ─── SCROLLBAR ─── */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#c4b5fd;border-radius:4px}
+
+/* ─── FULLSCREEN ─── */
+:fullscreen{background:#eef1f8}
+:fullscreen body{width:100vw;height:100vh;overflow:hidden;display:flex}
+:fullscreen .sidebar{position:fixed;left:0;top:0;height:100vh;z-index:200}
+:fullscreen .main{margin-left:248px;width:calc(100vw - 248px);height:100vh;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column}
+:fullscreen .content{overflow-x:hidden}
+:fullscreen .tbl-wrap{overflow-x:auto}
+
+/* ─── SPARKLINE LEGEND ─── */
+.legend-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;justify-content:center}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:.7rem;color:#64748b}
+.legend-dot{width:10px;height:10px;border-radius:3px}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sb-logo">
+    <div class="logo-wrap">
+      <!-- วว Logo SVG -->
+      <svg class="logo-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="lgA" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f472b6"/>
+            <stop offset="100%" stop-color="#a855f7"/>
+          </linearGradient>
+          <linearGradient id="lgB" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#fbbf24"/>
+            <stop offset="100%" stop-color="#f59e0b"/>
+          </linearGradient>
+        </defs>
+        <!-- Outer ring -->
+        <circle cx="26" cy="26" r="25" fill="none" stroke="url(#lgA)" stroke-width="2.5" opacity=".7"/>
+        <!-- Inner bg -->
+        <circle cx="26" cy="26" r="22" fill="url(#lgA)" opacity=".15"/>
+        <!-- วว text -->
+        <text x="26" y="30" font-family="'Sarabun',sans-serif" font-size="14" font-weight="900"
+              fill="white" text-anchor="middle" letter-spacing="1">วว.</text>
+        <!-- Gold arc top -->
+        <path d="M 10 26 A 16 16 0 0 1 42 26" fill="none" stroke="url(#lgB)" stroke-width="2" opacity=".6"/>
+      </svg>
+      <div class="logo-text">
+        <h1>กระบวนการสรรหา</h1>
+        <p>ประจำปี 2569<br>สถาบันวิจัย วว.</p>
+      </div>
+    </div>
+  </div>
+  <div class="nav-section">ภาพรวม</div>
+  <div class="nav-item active" id="nav-all"  onclick="showTab('all')"><span class="icon">📊</span> Dashboard หลัก</div>
+  <div class="nav-item"        id="nav-init" onclick="showTab('init')"><span class="icon">📋</span> กรอบตั้งต้น 2569</div>
+  <div class="nav-item"        id="nav-add"  onclick="showTab('add')"><span class="icon">➕</span> จัดสรรเพิ่ม/ทดแทน</div>
+  <div class="nav-item"        id="nav-pend" onclick="showTab('pend')"><span class="icon">⏳</span> รอการจัดสรร</div>
+  <div class="nav-section">กรองสถานะ</div>
+  <div class="nav-item" id="nav-s-Done"       onclick="filterByStatus('Done')"><span class="icon">✅</span> Done</div>
+  <div class="nav-item" id="nav-s-On Process" onclick="filterByStatus('On Process')"><span class="icon">🔄</span> On Process</div>
+  <div class="nav-item" id="nav-s-Hold"       onclick="filterByStatus('Hold')"><span class="icon">⏸️</span> Hold</div>
+  <div class="nav-item" id="nav-s-Pending"    onclick="filterByStatus('Pending')"><span class="icon">📌</span> Pending</div>
+  <div class="sb-footer">ข้อมูล ณ วันที่โหลด<br>© วว. HR Analytics 2569</div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">🏛️ กระบวนการสรรหาบุคลากรประจำปี 2569 — สถาบันวิจัยวิทยาศาสตร์และเทคโนโลยีแห่งประเทศไทย (วว.)</div>
+      <div class="topbar-sub">ระบบติดตามและรายงานสถานะการสรรหาบุคลากร ปีงบประมาณ 2569</div>
+    </div>
+    <div class="topbar-right">
+      <div class="badge-live">Live Data</div>
+      <button class="btn-top btn-refresh" onclick="loadData()">🔄 รีเฟรช</button>
+      <button class="btn-top btn-fs" id="btn-fs" onclick="toggleFS()">⛶ เต็มจอ</button>
+    </div>
+  </div>
+
+  <div class="content">
+    <div id="loader"><div class="spinner"></div><div class="loader-txt">กำลังโหลดข้อมูลจาก Google Sheets...</div></div>
+    <div id="dash" style="display:none">
+
+      <!-- KPI -->
+      <div class="kpi-row">
+        <div class="kpi kpi-total" onclick="clearFilters()">
+          <div class="kpi-label">ทั้งหมด</div><div class="kpi-num" id="kpi-total">0</div>
+          <div class="kpi-desc">อัตราทั้งหมด</div><div class="kpi-icon">📦</div>
+        </div>
+        <div class="kpi kpi-exec" onclick="filterByType('ผู้บริหาร')">
+          <div class="kpi-label">ผู้บริหาร</div><div class="kpi-num" id="kpi-exec">0</div>
+          <div class="kpi-desc">ตำแหน่งบริหาร</div><div class="kpi-icon">👔</div>
+        </div>
+        <div class="kpi kpi-emp" onclick="filterByType('พนักงาน')">
+          <div class="kpi-label">พนักงาน</div><div class="kpi-num" id="kpi-emp">0</div>
+          <div class="kpi-desc">พนักงานทั่วไป</div><div class="kpi-icon">💼</div>
+        </div>
+        <div class="kpi kpi-perm" onclick="filterByType('ลูกจ้างประจำ')">
+          <div class="kpi-label">ลูกจ้างประจำ</div><div class="kpi-num" id="kpi-perm">0</div>
+          <div class="kpi-desc">ลูกจ้างประจำ</div><div class="kpi-icon">📋</div>
+        </div>
+        <div class="kpi kpi-gen" onclick="filterByType('ลูกจ้างทั่วไป')">
+          <div class="kpi-label">ลูกจ้างทั่วไป</div><div class="kpi-num" id="kpi-gen">0</div>
+          <div class="kpi-desc">ลูกจ้างทั่วไป</div><div class="kpi-icon">🔧</div>
+        </div>
+      </div>
+
+      <!-- CHARTS -->
+      <div class="charts-row">
+        <div class="card" id="card-type">
+          <div class="card-title">ตามประเภทบุคลากร</div>
+          <div class="card-sub">สัดส่วนอัตราว่างแต่ละประเภท</div>
+          <div class="chart-wrap" style="height:188px;position:relative">
+            <canvas id="chart-type"></canvas>
+            <div class="donut-center">
+              <div class="dc-num" id="donut-num">0</div>
+              <div class="dc-lbl">รายการ</div>
+            </div>
+          </div>
+        </div>
+        <div class="card" id="card-group">
+          <div class="card-title">ตามกลุ่ม/สายงาน</div>
+          <div class="card-sub">จำนวนอัตราแต่ละกลุ่ม แยกตามสถานะ</div>
+          <div class="chart-wrap" style="height:188px"><canvas id="chart-group"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-title">ไตรมาสบรรจุ</div>
+          <div class="card-sub">จำนวนที่บรรจุ/แต่งตั้งแต่ละไตรมาส</div>
+          <div class="q-row" id="q-bars"></div>
+        </div>
+      </div>
+
+      <!-- FRAME SUMMARY -->
+      <div class="summary-row">
+        <div class="sum-card" style="background:linear-gradient(135deg,#f0f4ff,#e8eefb);border-color:#c7d2fe">
+          <h4 style="color:#4338ca">📂 กรอบตั้งต้น 2569</h4>
+          <div class="nums" id="sum-init"></div>
+        </div>
+        <div class="sum-card" style="background:linear-gradient(135deg,#fdf4ff,#fce7f3);border-color:#f9a8d4">
+          <h4 style="color:#be185d">➕ จัดสรรเพิ่ม/ทดแทน 2569</h4>
+          <div class="nums" id="sum-add"></div>
+        </div>
+        <div class="sum-card" style="background:linear-gradient(135deg,#f8fafc,#eef2f8);border-color:#cbd5e1">
+          <h4 style="color:#64748b">⏳ รอการจัดสรร</h4>
+          <div class="nums" id="sum-pend"></div>
+        </div>
+      </div>
+
+      <!-- TABS + TABLE -->
+      <div class="card">
+        <div class="tab-row">
+          <button class="tab-btn on" id="tab-all"  onclick="switchMainTab('all')">📊 ทั้งหมด</button>
+          <button class="tab-btn"    id="tab-init" onclick="switchMainTab('init')">📋 กรอบตั้งต้น 2569</button>
+          <button class="tab-btn"    id="tab-add"  onclick="switchMainTab('add')">➕ จัดสรรเพิ่ม/ทดแทน</button>
+          <button class="tab-btn"    id="tab-pend" onclick="switchMainTab('pend')">⏳ รอการจัดสรร</button>
+        </div>
+        <div class="filter-bar">
+          <label>กลุ่ม:</label>
+          <select id="f-group" onchange="applyFilter()"><option value="">ทั้งหมด</option></select>
+          <label>ประเภท:</label>
+          <select id="f-type" onchange="applyFilter()"><option value="">ทั้งหมด</option></select>
+          <label>สถานะ:</label>
+          <select id="f-status" onchange="applyFilter()">
+            <option value="">ทั้งหมด</option>
+            <option>Done</option><option>On Process</option><option>Hold</option><option>Pending</option>
+          </select>
+          <label>กระบวนการหลัก:</label>
+          <select id="f-proc" onchange="applyFilter()"><option value="">ทั้งหมด</option></select>
+          <label>ค้นหา:</label>
+          <input type="text" id="f-search" placeholder="ตำแหน่ง / หน่วยงาน..." oninput="applyFilter()" style="width:175px">
+          <button class="btn-clear" onclick="clearFilters()">✕ ล้างตัวกรอง</button>
+          <span id="tbl-count"></span>
+        </div>
+        <div class="tbl-wrap" style="max-height:510px;overflow-y:auto">
+          <table class="tbl">
+            <thead>
+              <tr>
+                <th>#</th><th>รหัส</th><th>ประเภท</th><th>ชื่อตำแหน่ง</th>
+                <th>กลุ่ม</th><th>ศูนย์/สำนัก</th><th>กอง/หป.</th>
+                <th>กระบวนการหลัก</th><th>รายละเอียด</th>
+                <th>กรอบสรรหา</th><th>สถานะ</th><th>ไตรมาส</th><th>ผู้ผ่านคัดเลือก</th>
+              </tr>
+            </thead>
+            <tbody id="tbl-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+    </div><!-- /dash -->
+  </div>
+</main>
+
+<script>
+// Register datalabels plugin globally
+Chart.register(ChartDataLabels);
+
+const SHEET_ID = '1tLl7bwm0EfG_2RJj39vrpTIPwAU5kxjBwb8WcKuqstA';
+let allData = [], currentTab = 'all', statusFilter = '';
+let chartType = null, chartGroup = null;
+
+// ── TYPE HELPERS (inclusive regex to cover all variants) ─────
+const isExec = t => /บริหาร/.test(t);          // ผู้บริหาร, นักบริหาร, รองผู้บริหาร ฯลฯ
+const isEmp  = t => /พนักงาน/.test(t);          // พนักงาน, พนักงานวิทยาศาสตร์ ฯลฯ
+const isPerm = t => /ลูกจ้างประจำ|ลจ\.ประจำ/.test(t);
+const isGen  = t => /ลูกจ้างทั่วไป|ลูกจ้างชั่วคราว|ลจ\.ทั่วไป/.test(t);
+function typeLabel(t) {
+  if (isExec(t)) return 'ผู้บริหาร';
+  if (isEmp(t))  return 'พนักงาน';
+  if (isPerm(t)) return 'ลูกจ้างประจำ';
+  if (isGen(t))  return 'ลูกจ้างทั่วไป';
+  return 'อื่นๆ';
+}
+
+// ── DATA LOADING ──────────────────────────────────────────────
+const cv = c => c && c.v != null ? String(c.v).trim() : '';
+
+function parseGvizRows(r) {
+  allData = r.table.rows.map(row => ({
+    no:      cv(row.c[0]),  status:  cv(row.c[1]),  code:    cv(row.c[2]),
+    type:    cv(row.c[3]),  pos:     cv(row.c[4]),  group:   cv(row.c[5]),
+    center:  cv(row.c[6]),  div:     cv(row.c[7]),  proc:    cv(row.c[8]),
+    subproc: cv(row.c[10]), detail:  cv(row.c[9]),  quarter: cv(row.c[16]),
+    winner:  cv(row.c[17]), frame:   cv(row.c[18]), budget:  cv(row.c[19]),
+    salary:  cv(row.c[20]), note:    cv(row.c[21]),
+  })).filter(r => r.status);
+  buildUI();
+}
+
+function loadData() {
+  document.getElementById('loader').style.display = 'flex';
+  document.getElementById('loader').innerHTML = '<div class="spinner"></div><div class="loader-txt">กำลังโหลดข้อมูลจาก Google Sheets...</div>';
+  document.getElementById('dash').style.display = 'none';
+
+  let done = false;
+  const timer = setTimeout(() => {
+    if (!done) showErr('โหลดข้อมูลไม่สำเร็จ — กรุณาตรวจสอบว่า Google Sheet เป็น "Anyone with the link can view"');
+  }, 9000);
+
+  // Shim: gviz always calls google.visualization.Query.setResponse()
+  window.google = window.google || {};
+  window.google.visualization = window.google.visualization || {};
+  window.google.visualization.Query = {
+    setResponse(resp) {
+      if (done) return;
+      done = true; clearTimeout(timer);
+      try { parseGvizRows(resp); }
+      catch(e) { showErr('ไม่สามารถอ่านข้อมูลได้: ' + e.message); }
+    }
+  };
+
+  const s = document.createElement('script');
+  s.src = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Sheet1&t=${Date.now()}`;
+  s.onerror = () => { if (!done) { done = true; clearTimeout(timer); showErr('โหลดข้อมูลไม่สำเร็จ'); } };
+  document.head.appendChild(s);
+}
+
+function showErr(msg) {
+  document.getElementById('loader').innerHTML =
+    `<div style="text-align:center;color:#ef4444;font-size:.9rem;line-height:2">❌ ${msg}</div>`;
+}
+
+// ── HELPERS ──────────────────────────────────────────────────
+function frameOf(r) {
+  if (/กรอบตั้งต้น/i.test(r.frame))     return 'init';
+  if (/จัดสรรเพิ่ม|ทดแทน/i.test(r.frame)) return 'add';
+  return 'pend';
+}
+function typeBadge(t) {
+  if (/ผู้บริหาร/.test(t))  return `<span class="type-badge t-exec">ผู้บริหาร</span>`;
+  if (/พนักงาน/.test(t))   return `<span class="type-badge t-gov">พนักงาน</span>`;
+  if (/ลูกจ้างประจำ/.test(t)) return `<span class="type-badge t-perm">ลจ.ประจำ</span>`;
+  if (/ลูกจ้างทั่วไป/.test(t)) return `<span class="type-badge t-gen">ลจ.ทั่วไป</span>`;
+  return `<span class="type-badge t-gov">${t}</span>`;
+}
+function frameBadge(r) {
+  const f = frameOf(r);
+  if (f === 'init') return `<span class="frame-badge f-init">กรอบตั้งต้น</span>`;
+  if (f === 'add')  return `<span class="frame-badge f-add">จัดสรรเพิ่ม</span>`;
+  return `<span class="frame-badge f-pend">รอจัดสรร</span>`;
+}
+function statusBadge(s) {
+  if (s === 'Done')       return `<span class="sbadge s-done">✅ Done</span>`;
+  if (s === 'On Process') return `<span class="sbadge s-proc">🔄 On Process</span>`;
+  if (s === 'Hold')       return `<span class="sbadge s-hold">⏸️ Hold</span>`;
+  return `<span class="sbadge s-pend">📌 Pending</span>`;
+}
+
+function animateNum(el, target) {
+  const start = parseInt(el.textContent) || 0;
+  if (start === target) return;
+  const dur = 450, step = 15;
+  let elapsed = 0;
+  const iv = setInterval(() => {
+    elapsed += step;
+    const pct = Math.min(elapsed / dur, 1);
+    const ease = 1 - Math.pow(1 - pct, 3);
+    el.textContent = Math.round(start + (target - start) * ease);
+    if (pct >= 1) clearInterval(iv);
+  }, step);
+}
+
+// ── BUILD UI (called once on load) ───────────────────────────
+function buildUI() {
+  // KPIs — will be updated per filter in applyFilter()
+
+  // Frame summaries (always from allData)
+  ['init','add','pend'].forEach(f => {
+    const rows = allData.filter(r => frameOf(r) === f);
+    document.getElementById('sum-'+f).innerHTML =
+      numItem(rows.length, 'ทั้งหมด', '#1e293b') +
+      numItem(rows.filter(r=>r.status==='Done').length,       'Done',    '#10b981') +
+      numItem(rows.filter(r=>r.status==='On Process').length, 'Process', '#3b82f6') +
+      numItem(rows.filter(r=>r.status==='Hold').length,       'Hold',    '#f59e0b') +
+      numItem(rows.filter(r=>r.status==='Pending').length,    'Pending', '#ef4444');
+  });
+
+  // Dropdowns (from allData)
+  fillSelect('f-group', [...new Set(allData.map(r => r.group).filter(Boolean))].sort());
+  fillSelect('f-type',  [...new Set(allData.map(r => r.type).filter(Boolean))].sort());
+  fillSelect('f-proc',  [...new Set(allData.map(r => r.proc).filter(Boolean))].sort());
+
+  document.getElementById('loader').style.display = 'none';
+  document.getElementById('dash').style.display = 'block';
+  applyFilter(); // builds charts + table
+}
+
+function numItem(n, label, color) {
+  return `<div class="num-item"><div class="n" style="color:${color}">${n}</div><div class="l">${label}</div></div>`;
+}
+
+function fillSelect(id, opts) {
+  const el = document.getElementById(id);
+  const cur = el.value;
+  el.innerHTML = '<option value="">ทั้งหมด</option>' + opts.map(o => `<option>${o}</option>`).join('');
+  if (cur) el.value = cur;
+}
+
+// ── CHARTS (always receive filtered data) ────────────────────
+function buildTypeChart(data) {
+  const types  = ['ผู้บริหาร','พนักงาน','ลูกจ้างประจำ','ลูกจ้างทั่วไป'];
+  const colors = ['#f472b6','#818cf8','#34d399','#fbbf24'];
+  const fns    = [isExec, isEmp, isPerm, isGen];
+  const counts = fns.map(fn => data.filter(r => fn(r.type)).length);
+  const total  = data.length;
+  document.getElementById('donut-num').textContent = total;
+
+  if (chartType) chartType.destroy();
+  chartType = new Chart(document.getElementById('chart-type'), {
+    type: 'doughnut',
+    data: {
+      labels: types,
+      datasets: [{ data: counts, backgroundColor: colors, borderWidth: 2, borderColor: '#fff', hoverOffset: 8 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '60%',
+      animation: { duration: 600 },
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 10, family: 'Sarabun' }, boxWidth: 10, padding: 8 } },
+        datalabels: {
+          color: '#fff',
+          font: { size: 10, weight: 'bold', family: 'Sarabun' },
+          formatter: (v) => {
+            if (!v || !total) return '';
+            const pct = Math.round(v / total * 100);
+            return pct >= 5 ? pct + '%' : '';
+          },
+          anchor: 'center', align: 'center'
+        }
+      }
+    }
+  });
+}
+
+function buildGroupChart(data) {
+  // Use allData for group axis labels so it stays stable; counts from filtered data
+  const groups  = [...new Set(allData.map(r => r.group).filter(Boolean))].sort();
+  const st      = ['Done','On Process','Hold','Pending'];
+  const colors  = ['#10b981','#3b82f6','#f59e0b','#ef4444'];
+  const datasets = st.map((s, i) => ({
+    label: s,
+    data: groups.map(g => data.filter(r => r.group === g && r.status === s).length),
+    backgroundColor: colors[i],
+    borderRadius: 3,
+    borderSkipped: false,
+  }));
+
+  if (chartGroup) chartGroup.destroy();
+  chartGroup = new Chart(document.getElementById('chart-group'), {
+    type: 'bar',
+    data: { labels: groups, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      animation: { duration: 500 },
+      plugins: {
+        legend: { position: 'bottom', labels: { font: { size: 9, family: 'Sarabun' }, boxWidth: 9, padding: 6 } },
+        datalabels: {
+          color: '#fff',
+          font: { size: 8, weight: 'bold', family: 'Sarabun' },
+          formatter: v => v > 0 ? v : '',
+          anchor: 'center', align: 'center'
+        }
+      },
+      scales: {
+        x: { stacked: true, ticks: { font: { size: 9, family: 'Sarabun' }, maxRotation: 35 } },
+        y: { stacked: true, ticks: { stepSize: 5, font: { size: 9 } } }
+      }
+    }
+  });
+}
+
+function buildQuarterBars(data) {
+  const qmap = {};
+  data.filter(r => r.quarter && r.status === 'Done').forEach(r => {
+    qmap[r.quarter] = (qmap[r.quarter] || 0) + 1;
+  });
+  const sorted = Object.entries(qmap).sort((a,b) => a[0].localeCompare(b[0]));
+  const max    = Math.max(...sorted.map(x => x[1]), 1);
+  const colors = ['#818cf8','#f472b6','#34d399','#fbbf24','#60a5fa','#fb923c'];
+  const el = document.getElementById('q-bars');
+  if (!sorted.length) {
+    el.innerHTML = '<div style="text-align:center;color:#94a3b8;font-size:.76rem;padding:18px">ไม่มีข้อมูลไตรมาส</div>';
+    return;
+  }
+  el.innerHTML = sorted.map(([q, n], i) =>
+    `<div class="q-bar-row">
+      <div class="q-label">${q}</div>
+      <div class="q-bar-bg">
+        <div class="q-bar" style="width:${Math.round(n/max*100)}%;background:${colors[i%6]}">
+          <span>${n}</span>
+        </div>
+      </div>
+      <div class="q-val">${n}</div>
+    </div>`
+  ).join('');
+  // Animate labels in
+  setTimeout(() => {
+    el.querySelectorAll('.q-bar').forEach(b => b.classList.add('loaded'));
+  }, 300);
+}
+
+// ── FILTER ───────────────────────────────────────────────────
+function getFilteredData() {
+  const grp  = document.getElementById('f-group').value;
+  const typ  = document.getElementById('f-type').value;
+  const sta  = document.getElementById('f-status').value || statusFilter;
+  const prc  = document.getElementById('f-proc').value;
+  const srch = document.getElementById('f-search').value.toLowerCase();
+  return allData.filter(r => {
+    if (currentTab === 'init' && frameOf(r) !== 'init') return false;
+    if (currentTab === 'add'  && frameOf(r) !== 'add')  return false;
+    if (currentTab === 'pend' && frameOf(r) !== 'pend') return false;
+    if (grp  && r.group  !== grp)  return false;
+    if (typ  && r.type   !== typ)  return false;
+    if (sta  && r.status !== sta)  return false;
+    if (prc  && r.proc   !== prc)  return false;
+    if (srch && !(r.pos + r.center + r.div + r.winner).toLowerCase().includes(srch)) return false;
+    return true;
+  });
+}
+
+function applyFilter() {
+  const rows = getFilteredData();
+  const isFiltered = rows.length < allData.length;
+
+  // ── Update KPIs with filtered data ──
+  animateNum(document.getElementById('kpi-total'), rows.length);
+  animateNum(document.getElementById('kpi-exec'),  rows.filter(r => isExec(r.type)).length);
+  animateNum(document.getElementById('kpi-emp'),   rows.filter(r => isEmp(r.type)).length);
+  animateNum(document.getElementById('kpi-perm'),  rows.filter(r => isPerm(r.type)).length);
+  animateNum(document.getElementById('kpi-gen'),   rows.filter(r => isGen(r.type)).length);
+
+  // ── Update charts with filtered data ──
+  buildTypeChart(rows);
+  buildGroupChart(rows);
+  buildQuarterBars(rows);
+
+  // ── Highlight chart cards when filtered ──
+  ['card-type','card-group'].forEach(id => {
+    document.getElementById(id)?.classList.toggle('filtered', isFiltered);
+  });
+
+  // ── Count label ──
+  document.getElementById('tbl-count').textContent =
+    isFiltered ? `แสดง ${rows.length} / ${allData.length} รายการ` : `${rows.length} รายการ`;
+
+  // ── Table ──
+  const tbody = document.getElementById('tbl-body');
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="13" class="tbl-empty">🔍 ไม่พบข้อมูลที่ตรงกับเงื่อนไข</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = rows.map((r,i) => `<tr>
+    <td style="color:#94a3b8;font-size:.68rem">${i+1}</td>
+    <td style="font-size:.68rem;color:#7c3aed;font-weight:800">${r.code}</td>
+    <td>${typeBadge(r.type)}</td>
+    <td style="font-weight:700;color:#1e293b;max-width:180px">${r.pos || '(ยังไม่ระบุ)'}</td>
+    <td><span style="font-weight:800;color:#4f46e5">${r.group}</span></td>
+    <td style="color:#334155">${r.center}</td>
+    <td style="color:#64748b;font-size:.74rem">${r.div}</td>
+    <td style="font-size:.73rem;color:#334155" title="${r.proc}">${r.proc}</td>
+    <td style="font-size:.69rem;color:#64748b" title="${r.subproc}">${r.subproc}</td>
+    <td>${frameBadge(r)}</td>
+    <td>${statusBadge(r.status)}</td>
+    <td style="font-size:.7rem;color:#7c3aed;white-space:nowrap">${r.quarter}</td>
+    <td style="font-size:.73rem;color:#1e293b">${r.winner}</td>
+  </tr>`).join('');
+}
+
+// ── TAB / FILTER CONTROLS ─────────────────────────────────────
+function switchMainTab(tab) {
+  currentTab = tab; statusFilter = '';
+  document.getElementById('f-status').value = '';
+  ['all','init','add','pend'].forEach(t => {
+    document.getElementById('tab-'+t)?.classList.toggle('on', t === tab);
+    document.getElementById('nav-'+t)?.classList.toggle('active', t === tab);
+  });
+  applyFilter();
+}
+function showTab(tab) { switchMainTab(tab); }
+
+function filterByType(label) {
+  // Set dropdown to matching option (find first option that contains the label)
+  const sel = document.getElementById('f-type');
+  const opt = [...sel.options].find(o => {
+    if (label === 'ผู้บริหาร')     return isExec(o.value);
+    if (label === 'พนักงาน')      return isEmp(o.value);
+    if (label === 'ลูกจ้างประจำ') return isPerm(o.value);
+    if (label === 'ลูกจ้างทั่วไป') return isGen(o.value);
+    return o.value === label;
+  });
+  sel.value = opt ? opt.value : label;
+  applyFilter();
+}
+
+function filterByStatus(s) {
+  statusFilter = s;
+  document.getElementById('f-status').value = s;
+  // highlight sidebar item
+  ['Done','On Process','Hold','Pending'].forEach(st => {
+    document.getElementById('nav-s-'+st)?.classList.toggle('active', st === s);
+  });
+  applyFilter();
+}
+
+function clearFilters() {
+  currentTab = 'all'; statusFilter = '';
+  ['f-group','f-type','f-status','f-proc'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f-search').value = '';
+  ['all','init','add','pend'].forEach(t => {
+    document.getElementById('tab-'+t)?.classList.toggle('on', t === 'all');
+    document.getElementById('nav-'+t)?.classList.toggle('active', t === 'all');
+  });
+  ['Done','On Process','Hold','Pending'].forEach(st => {
+    document.getElementById('nav-s-'+st)?.classList.remove('active');
+  });
+  applyFilter();
+}
+
+// ── FULLSCREEN ────────────────────────────────────────────────
+function toggleFS() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen();
+    document.getElementById('btn-fs').textContent = '✕ ออกเต็มจอ';
+  } else {
+    document.exitFullscreen();
+    document.getElementById('btn-fs').textContent = '⛶ เต็มจอ';
+  }
+}
+document.addEventListener('fullscreenchange', () => {
+  if (!document.fullscreenElement)
+    document.getElementById('btn-fs').textContent = '⛶ เต็มจอ';
+});
+
+// ── INIT ─────────────────────────────────────────────────────
+loadData();
+</script>
+</body>
+</html>
