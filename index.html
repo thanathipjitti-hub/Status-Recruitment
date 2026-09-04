@@ -9,46 +9,55 @@
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Sarabun',sans-serif;background:#e8edf8;color:#1e293b;min-height:100vh;display:flex;overflow-x:auto;min-width:900px}
+body{font-family:'Sarabun',sans-serif;background:#dce3f0;color:#1e293b;min-height:100vh;display:flex;overflow-x:auto;min-width:900px}
 /* animated bg dots */
-body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle at 20% 20%,rgba(168,85,247,.07) 0%,transparent 50%),radial-gradient(circle at 80% 80%,rgba(99,102,241,.07) 0%,transparent 50%);pointer-events:none;z-index:0}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(circle at 20% 20%,rgba(27,58,107,.07) 0%,transparent 50%),radial-gradient(circle at 80% 80%,rgba(45,95,168,.06) 0%,transparent 50%);pointer-events:none;z-index:0}
 .main{position:relative;z-index:1}
 
 /* ─── SIDEBAR ─── */
-.sidebar{width:248px;min-height:100vh;background:linear-gradient(165deg,#0d0025 0%,#250858 40%,#4a1799 78%,#6d28d9 100%);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:100;box-shadow:4px 0 30px rgba(0,0,0,.45);overflow:hidden}
-.sidebar::before{content:'';position:absolute;top:-60px;right:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(167,139,250,.25) 0%,transparent 70%);pointer-events:none}
-.sidebar::after{content:'';position:absolute;bottom:-40px;left:-30px;width:140px;height:140px;background:radial-gradient(circle,rgba(244,114,182,.15) 0%,transparent 70%);pointer-events:none}
-.sb-logo{padding:20px 16px 16px;border-bottom:1px solid rgba(255,255,255,.1);position:relative}
+.sidebar{width:248px;min-height:100vh;background:linear-gradient(165deg,#060e24 0%,#0f2247 40%,#1B3A6B 78%,#2D5FA8 100%);display:flex;flex-direction:column;position:fixed;left:0;top:0;bottom:0;z-index:100;box-shadow:4px 0 30px rgba(0,0,0,.45);overflow:hidden}
+.sidebar::before{content:'';position:absolute;top:-60px;right:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(200,168,75,.18) 0%,transparent 70%);pointer-events:none}
+.sidebar::after{content:'';position:absolute;bottom:-40px;left:-30px;width:140px;height:140px;background:radial-gradient(circle,rgba(91,155,224,.15) 0%,transparent 70%);pointer-events:none}
+.sb-logo{padding:20px 16px 16px;border-bottom:1px solid rgba(200,168,75,.25);position:relative}
 .sb-logo .logo-wrap{display:flex;align-items:center;gap:12px;margin-bottom:0}
-.sb-logo .logo-svg{width:52px;height:52px;flex-shrink:0;filter:drop-shadow(0 4px 10px rgba(168,85,247,.6))}
+.sb-logo .logo-img-wrap{width:52px;height:52px;flex-shrink:0;background:#fff;border-radius:10px;padding:5px;box-shadow:0 3px 12px rgba(0,0,0,.35)}
+.sb-logo .logo-img-wrap img{width:100%;height:100%;object-fit:contain;display:block}
 .sb-logo .logo-text h1{color:#fff;font-size:1.05rem;font-weight:900;letter-spacing:.5px;line-height:1.2}
-.sb-logo .logo-text p{color:#c4b5fd;font-size:.72rem;margin-top:3px;line-height:1.4}
-.nav-section{padding:14px 16px 4px;color:#7c5fad;font-size:.68rem;font-weight:800;letter-spacing:2px;text-transform:uppercase}
-.nav-item{display:flex;align-items:center;gap:10px;padding:10px 18px;color:#ddd6fe;font-size:.92rem;cursor:pointer;border-radius:10px;margin:2px 8px;transition:.2s;position:relative}
+.sb-logo .logo-text p{color:rgba(228,200,110,.75);font-size:.72rem;margin-top:3px;line-height:1.4}
+.nav-section{padding:14px 16px 4px;color:rgba(200,168,75,.6);font-size:.68rem;font-weight:800;letter-spacing:2px;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 18px;color:rgba(255,255,255,.75);font-size:.92rem;cursor:pointer;border-radius:10px;margin:2px 8px;transition:.2s;position:relative}
 .nav-item:hover{background:rgba(255,255,255,.1);color:#fff;transform:translateX(3px)}
-.nav-item.active{background:linear-gradient(90deg,rgba(168,85,247,.45),rgba(244,114,182,.25));color:#fff;border-left:3px solid #f472b6}
+.nav-item.active{background:linear-gradient(90deg,rgba(200,168,75,.3),rgba(91,155,224,.15));color:#fff;border-left:3px solid #C8A84B}
 .nav-item .icon{width:22px;text-align:center;font-size:1rem}
-.sb-footer{margin-top:auto;padding:12px 16px;border-top:1px solid rgba(255,255,255,.08);color:#7c6aa0;font-size:.75rem;line-height:1.7}
+.sb-footer{margin-top:auto;padding:12px 16px;border-top:1px solid rgba(200,168,75,.2);color:rgba(255,255,255,.35);font-size:.75rem;line-height:1.7}
 
 /* ─── MAIN ─── */
 .main{margin-left:248px;flex:1;display:flex;flex-direction:column;min-height:100vh;min-width:650px}
-.topbar{background:rgba(255,255,255,.97);backdrop-filter:blur(16px);padding:11px 26px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid transparent;border-image:linear-gradient(90deg,#a855f7,#f472b6,#6366f1) 1;position:sticky;top:0;z-index:50;box-shadow:0 2px 20px rgba(0,0,0,.08)}
-.topbar-title{font-size:.98rem;font-weight:800;color:#1e293b}
-.topbar-sub{font-size:.72rem;color:#64748b;margin-top:1px}
+.topbar{background:linear-gradient(135deg,#060d1f 0%,#0f2247 35%,#1B3A6B 70%,#2d4a8a 100%);background-size:300% 300%;animation:gradShift 12s ease infinite;padding:11px 26px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #C8A84B;position:sticky;top:0;z-index:50;box-shadow:0 4px 20px rgba(27,58,107,.35);overflow:hidden}
+@keyframes gradShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.topbar-canvas{position:absolute;inset:0;pointer-events:none;z-index:0}
+.topbar-shoot{position:absolute;z-index:1;width:70px;height:1.5px;border-radius:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent);animation:shootStar 7s ease-in-out infinite;transform-origin:right;pointer-events:none}
+@keyframes shootStar{0%{left:-100px;top:35%;opacity:0;transform:rotate(-18deg) scaleX(0)}8%{opacity:1;transform:rotate(-18deg) scaleX(1)}55%{opacity:.3}65%,100%{left:110%;top:10%;opacity:0;transform:rotate(-18deg) scaleX(0)}}
+.topbar-shoot2{position:absolute;z-index:1;width:50px;height:1px;border-radius:1px;background:linear-gradient(90deg,transparent,rgba(200,168,75,.9),transparent);animation:shootStar2 11s ease-in-out 3s infinite;pointer-events:none}
+@keyframes shootStar2{0%{left:-80px;top:70%;opacity:0;transform:rotate(-12deg) scaleX(0)}8%{opacity:1;transform:rotate(-12deg) scaleX(1)}55%{opacity:.2}65%,100%{left:110%;top:40%;opacity:0;transform:rotate(-12deg) scaleX(0)}}
+.topbar-nebula{position:absolute;right:30%;top:0;bottom:0;width:35%;background:radial-gradient(ellipse at center,rgba(91,155,224,.07) 0%,transparent 70%);z-index:0;pointer-events:none}
+.topbar-inner{position:relative;z-index:2;display:flex;align-items:center;gap:12px}
+.topbar-title{font-size:.98rem;font-weight:800;color:#fff}
+.topbar-sub{font-size:.72rem;color:rgba(255,255,255,.9);margin-top:2px;font-weight:600;letter-spacing:.01em}
 .topbar-right{display:flex;align-items:center;gap:8px}
-.badge-live{background:linear-gradient(135deg,#d1fae5,#a7f3d0);color:#065f46;padding:4px 11px;border-radius:20px;font-size:.71rem;font-weight:700;display:flex;align-items:center;gap:5px}
-.badge-live::before{content:'●';animation:blink 1.3s infinite}
+.badge-live{background:rgba(200,168,75,.2);border:1px solid rgba(200,168,75,.45);color:#E4C86E;padding:4px 11px;border-radius:20px;font-size:.71rem;font-weight:700;display:flex;align-items:center;gap:5px}
+.badge-live::before{content:'●';animation:blink 1.3s infinite;color:#34d399}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
 .btn-top{border:none;padding:7px 13px;border-radius:8px;font-size:.76rem;cursor:pointer;font-family:inherit;transition:.2s;font-weight:600}
-.btn-refresh{background:linear-gradient(135deg,#f472b6,#a855f7);color:#fff;box-shadow:0 3px 10px rgba(168,85,247,.4)}
+.btn-refresh{background:linear-gradient(135deg,#C8A84B,#E4C86E);color:#0f2247;box-shadow:0 3px 10px rgba(200,168,75,.4)}
 .btn-refresh:hover{opacity:.88;transform:translateY(-1px)}
-.btn-fs{background:#f1f5f9;color:#475569;border:1px solid #e2e8f0}
-.btn-fs:hover{background:#e2e8f0}
+.btn-fs{background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.2)}
+.btn-fs:hover{background:rgba(255,255,255,.2)}
 
 .content{padding:18px 22px;flex:1}
 
 /* ─── KPI ─── */
-.kpi-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:18px}
 .kpi{border-radius:16px;padding:16px 14px;color:#fff;position:relative;overflow:hidden;cursor:pointer;transition:.25s;box-shadow:0 4px 18px rgba(0,0,0,.16)}
 .kpi:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,.22)}
 .kpi:active{transform:scale(.97)}
@@ -59,11 +68,12 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 .kpi-num{font-size:2.3rem;font-weight:900;line-height:1;margin:4px 0 2px;font-variant-numeric:tabular-nums}
 .kpi-desc{font-size:.67rem;opacity:.72}
 .kpi-icon{position:absolute;right:13px;top:13px;font-size:1.6rem;opacity:.3}
-.kpi-total{background:linear-gradient(135deg,#6366f1,#8b5cf6)}
+.kpi-total{background:linear-gradient(135deg,#0f2247,#1B3A6B,#2D5FA8)}
 .kpi-exec{background:linear-gradient(135deg,#f59e0b,#b45309)}
 .kpi-emp{background:linear-gradient(135deg,#3b82f6,#1d4ed8)}
 .kpi-perm{background:linear-gradient(135deg,#10b981,#047857)}
 .kpi-gen{background:linear-gradient(135deg,#f472b6,#db2777)}
+.kpi-spec{background:linear-gradient(135deg,#ef4444,#991b1b)}
 
 /* ─── CHARTS ROW ─── */
 .charts-row{display:grid;grid-template-columns:1fr 2fr 1.05fr;gap:13px;margin-bottom:16px}
@@ -148,6 +158,7 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 .t-gov{background:#dbeafe;color:#1e40af}
 .t-perm{background:#dcfce7;color:#166534}
 .t-gen{background:#ffe4e6;color:#9f1239}
+.t-spec{background:#fee2e2;color:#991b1b}
 .tbl-empty{text-align:center;color:#94a3b8;padding:48px;font-size:.88rem}
 
 /* ─── LOADER ─── */
@@ -182,28 +193,10 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 <aside class="sidebar">
   <div class="sb-logo">
     <div class="logo-wrap">
-      <!-- วว Logo SVG -->
-      <svg class="logo-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="lgA" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#f472b6"/>
-            <stop offset="100%" stop-color="#a855f7"/>
-          </linearGradient>
-          <linearGradient id="lgB" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#fbbf24"/>
-            <stop offset="100%" stop-color="#f59e0b"/>
-          </linearGradient>
-        </defs>
-        <!-- Outer ring -->
-        <circle cx="26" cy="26" r="25" fill="none" stroke="url(#lgA)" stroke-width="2.5" opacity=".7"/>
-        <!-- Inner bg -->
-        <circle cx="26" cy="26" r="22" fill="url(#lgA)" opacity=".15"/>
-        <!-- วว text -->
-        <text x="26" y="30" font-family="'Sarabun',sans-serif" font-size="14" font-weight="900"
-              fill="white" text-anchor="middle" letter-spacing="1">วว.</text>
-        <!-- Gold arc top -->
-        <path d="M 10 26 A 16 16 0 0 1 42 26" fill="none" stroke="url(#lgB)" stroke-width="2" opacity=".6"/>
-      </svg>
+      <!-- วว Logo -->
+      <div class="logo-img-wrap">
+        <img src="tistr-logo.png" alt="วว. Logo">
+      </div>
       <div class="logo-text">
         <h1>กระบวนการสรรหา</h1>
         <p>ประจำปี 2569<br>สถาบันวิจัย วว.</p>
@@ -226,9 +219,15 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 <!-- MAIN -->
 <main class="main">
   <div class="topbar">
-    <div>
-      <div class="topbar-title">🏛️ กระบวนการสรรหาบุคลากรประจำปี 2569 — สถาบันวิจัยวิทยาศาสตร์และเทคโนโลยีแห่งประเทศไทย (วว.)</div>
-      <div class="topbar-sub">ระบบติดตามและรายงานสถานะการสรรหาบุคลากร ปีงบประมาณ 2569</div>
+    <canvas class="topbar-canvas" id="topbar-stars"></canvas>
+    <div class="topbar-shoot"></div>
+    <div class="topbar-shoot2"></div>
+    <div class="topbar-nebula"></div>
+    <div class="topbar-inner">
+      <div>
+        <div class="topbar-title">🏛️ กระบวนการสรรหาบุคลากรประจำปี 2569 — สถาบันวิจัยวิทยาศาสตร์และเทคโนโลยีแห่งประเทศไทย (วว.)</div>
+        <div class="topbar-sub">ระบบติดตามและรายงานสถานะการสรรหาบุคลากร ปีงบประมาณ 2569</div>
+      </div>
     </div>
     <div class="topbar-right">
       <div class="badge-live">Live Data</div>
@@ -262,6 +261,10 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
         <div class="kpi kpi-gen" onclick="filterByType('ลูกจ้างทั่วไป')">
           <div class="kpi-label">ลูกจ้างทั่วไป</div><div class="kpi-num" id="kpi-gen">0</div>
           <div class="kpi-desc">ลูกจ้างทั่วไป</div><div class="kpi-icon">🔧</div>
+        </div>
+        <div class="kpi kpi-spec" onclick="filterByType('ลูกจ้างเฉพาะกิจ')">
+          <div class="kpi-label">ลูกจ้างเฉพาะกิจ</div><div class="kpi-num" id="kpi-spec">0</div>
+          <div class="kpi-desc">ลูกจ้างเฉพาะกิจ</div><div class="kpi-icon">⚡</div>
         </div>
       </div>
 
@@ -363,11 +366,13 @@ const isExec = t => /บริหาร/.test(t);          // ผู้บริ
 const isEmp  = t => /พนักงาน/.test(t);          // พนักงาน, พนักงานวิทยาศาสตร์ ฯลฯ
 const isPerm = t => /ลูกจ้างประจำ|ลจ\.ประจำ/.test(t);
 const isGen  = t => /ลูกจ้างทั่วไป|ลูกจ้างชั่วคราว|ลจ\.ทั่วไป/.test(t);
+const isSpec = t => /ลูกจ้างเฉพาะกิจ|ลจ\.เฉพาะ/.test(t);
 function typeLabel(t) {
   if (isExec(t)) return 'ผู้บริหาร';
   if (isEmp(t))  return 'พนักงาน';
   if (isPerm(t)) return 'ลูกจ้างประจำ';
   if (isGen(t))  return 'ลูกจ้างทั่วไป';
+  if (isSpec(t)) return 'ลูกจ้างเฉพาะกิจ';
   return 'อื่นๆ';
 }
 
@@ -430,6 +435,7 @@ function typeBadge(t) {
   if (/พนักงาน/.test(t))   return `<span class="type-badge t-gov">พนักงาน</span>`;
   if (/ลูกจ้างประจำ/.test(t)) return `<span class="type-badge t-perm">ลจ.ประจำ</span>`;
   if (/ลูกจ้างทั่วไป/.test(t)) return `<span class="type-badge t-gen">ลจ.ทั่วไป</span>`;
+  if (/ลูกจ้างเฉพาะกิจ/.test(t)) return `<span class="type-badge t-spec">ลจ.เฉพาะกิจ</span>`;
   return `<span class="type-badge t-gov">${t}</span>`;
 }
 function frameBadge(r) {
@@ -497,9 +503,9 @@ function fillSelect(id, opts) {
 
 // ── CHARTS (always receive filtered data) ────────────────────
 function buildTypeChart(data) {
-  const types  = ['ผู้บริหาร','พนักงาน','ลูกจ้างประจำ','ลูกจ้างทั่วไป'];
-  const colors = ['#f472b6','#818cf8','#34d399','#fbbf24'];
-  const fns    = [isExec, isEmp, isPerm, isGen];
+  const types  = ['ผู้บริหาร','พนักงาน','ลูกจ้างประจำ','ลูกจ้างทั่วไป','ลูกจ้างเฉพาะกิจ'];
+  const colors = ['#f472b6','#818cf8','#34d399','#fbbf24','#f87171'];
+  const fns    = [isExec, isEmp, isPerm, isGen, isSpec];
   const counts = fns.map(fn => data.filter(r => fn(r.type)).length);
   const total  = data.length;
   document.getElementById('donut-num').textContent = total;
@@ -628,6 +634,7 @@ function applyFilter() {
   animateNum(document.getElementById('kpi-emp'),   rows.filter(r => isEmp(r.type)).length);
   animateNum(document.getElementById('kpi-perm'),  rows.filter(r => isPerm(r.type)).length);
   animateNum(document.getElementById('kpi-gen'),   rows.filter(r => isGen(r.type)).length);
+  animateNum(document.getElementById('kpi-spec'),  rows.filter(r => isSpec(r.type)).length);
 
   // ── Update charts with filtered data ──
   buildTypeChart(rows);
@@ -686,6 +693,7 @@ function filterByType(label) {
     if (label === 'พนักงาน')      return isEmp(o.value);
     if (label === 'ลูกจ้างประจำ') return isPerm(o.value);
     if (label === 'ลูกจ้างทั่วไป') return isGen(o.value);
+    if (label === 'ลูกจ้างเฉพาะกิจ') return isSpec(o.value);
     return o.value === label;
   });
   sel.value = opt ? opt.value : label;
@@ -733,6 +741,36 @@ document.addEventListener('fullscreenchange', () => {
 
 // ── INIT ─────────────────────────────────────────────────────
 loadData();
+
+// ── STAR CANVAS ──
+(function(){
+  const c = document.getElementById('topbar-stars');
+  if(!c) return;
+  const tb = c.parentElement;
+  function resize(){c.width=tb.offsetWidth;c.height=tb.offsetHeight;}
+  resize();
+  window.addEventListener('resize', resize);
+  const ctx = c.getContext('2d');
+  const stars = Array.from({length:80},()=>({
+    x: Math.random()*c.width, y: Math.random()*c.height,
+    r: Math.random()*.9+.2, a: Math.random(), da: (Math.random()*.004+.001)*(Math.random()<.5?1:-1)
+  }));
+  function draw(){
+    resize();
+    ctx.clearRect(0,0,c.width,c.height);
+    stars.forEach(s=>{
+      s.a += s.da;
+      if(s.a>1||s.a<0) s.da*=-1;
+      ctx.beginPath();
+      ctx.arc(s.x*(c.width/tb.offsetWidth||1), s.y, s.r, 0, Math.PI*2);
+      const gold = Math.random()<.18;
+      ctx.fillStyle = gold ? `rgba(228,200,110,${s.a*.7})` : `rgba(255,255,255,${s.a*.65})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
 </script>
 </body>
 </html>
