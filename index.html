@@ -240,33 +240,6 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
     <div id="loader"><div class="spinner"></div><div class="loader-txt">กำลังโหลดข้อมูลจาก Google Sheets...</div></div>
     <div id="dash" style="display:none">
 
-      <!-- KPI -->
-      <div class="kpi-row">
-        <div class="kpi kpi-total" onclick="clearFilters()">
-          <div class="kpi-label">ทั้งหมด</div><div class="kpi-num" id="kpi-total">0</div>
-          <div class="kpi-desc">อัตราทั้งหมด</div><div class="kpi-icon">📦</div>
-        </div>
-        <div class="kpi kpi-exec" onclick="filterByType('ผู้บริหาร')">
-          <div class="kpi-label">ผู้บริหาร</div><div class="kpi-num" id="kpi-exec">0</div>
-          <div class="kpi-desc">ตำแหน่งบริหาร</div><div class="kpi-icon">👔</div>
-        </div>
-        <div class="kpi kpi-emp" onclick="filterByType('พนักงาน')">
-          <div class="kpi-label">พนักงาน</div><div class="kpi-num" id="kpi-emp">0</div>
-          <div class="kpi-desc">พนักงานทั่วไป</div><div class="kpi-icon">💼</div>
-        </div>
-        <div class="kpi kpi-perm" onclick="filterByType('ลูกจ้างประจำ')">
-          <div class="kpi-label">ลูกจ้างประจำ</div><div class="kpi-num" id="kpi-perm">0</div>
-          <div class="kpi-desc">ลูกจ้างประจำ</div><div class="kpi-icon">📋</div>
-        </div>
-        <div class="kpi kpi-gen" onclick="filterByType('ลูกจ้างทั่วไป')">
-          <div class="kpi-label">ลูกจ้างทั่วไป</div><div class="kpi-num" id="kpi-gen">0</div>
-          <div class="kpi-desc">ลูกจ้างทั่วไป</div><div class="kpi-icon">🔧</div>
-        </div>
-        <div class="kpi kpi-spec" onclick="filterByType('ลูกจ้างเฉพาะกิจ')">
-          <div class="kpi-label">ลูกจ้างเฉพาะกิจ</div><div class="kpi-num" id="kpi-spec">0</div>
-          <div class="kpi-desc">ลูกจ้างเฉพาะกิจ</div><div class="kpi-icon">⚡</div>
-        </div>
-      </div>
 
       <!-- CHARTS -->
       <div class="charts-row">
